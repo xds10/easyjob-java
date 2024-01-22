@@ -12,8 +12,5 @@ import static java.lang.annotation.ElementType.METHOD;
 @Target({METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface GlobalInterceptor {
-    //boolean checkParams() default true;
-
-
     boolean checkParams() default true;
 }

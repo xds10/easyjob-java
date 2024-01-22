@@ -1,19 +1,19 @@
 package com.easyjob.service.impl;
 
-import java.util.List;
-
-import javax.annotation.Resource;
-
-import org.springframework.stereotype.Service;
-
+import com.easyjob.entity.constants.Constants;
 import com.easyjob.entity.enums.PageSize;
-import com.easyjob.entity.query.SysMenuQuery;
 import com.easyjob.entity.po.SysMenu;
-import com.easyjob.entity.vo.PaginationResultVO;
 import com.easyjob.entity.query.SimplePage;
+import com.easyjob.entity.query.SysMenuQuery;
+import com.easyjob.entity.vo.PaginationResultVO;
 import com.easyjob.mappers.SysMenuMapper;
 import com.easyjob.service.SysMenuService;
 import com.easyjob.utils.StringTools;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -22,109 +22,131 @@ import com.easyjob.utils.StringTools;
 @Service("sysMenuService")
 public class SysMenuServiceImpl implements SysMenuService {
 
-	@Resource
-	private SysMenuMapper<SysMenu, SysMenuQuery> sysMenuMapper;
+    private static final String ROOT_MENU_NAME = "所有菜单";
+    @Resource
+    private SysMenuMapper<SysMenu, SysMenuQuery> sysMenuMapper;
 
-	/**
-	 * 根据条件查询列表
-	 */
-	@Override
-	public List<SysMenu> findListByParam(SysMenuQuery param) {
-		return this.sysMenuMapper.selectList(param);
-	}
 
-	/**
-	 * 根据条件查询列表
-	 */
-	@Override
-	public Integer findCountByParam(SysMenuQuery param) {
-		return this.sysMenuMapper.selectCount(param);
-	}
+    /**
+     * 根据条件查询列表
+     */
+    @Override
+    public List<SysMenu> findListByParam(SysMenuQuery param) {
+        List<SysMenu> sysMenuList = this.sysMenuMapper.selectList(param);
+        if (param.getFormate2Tree() != null && param.getFormate2Tree()) {
+            SysMenu root = new SysMenu();
+            root.setMenuId(Constants.DEFAULT_ROOT_MENUID);
+            root.setpId(-1);
+            root.setMenuName(ROOT_MENU_NAME);
+            sysMenuList.add(root);
+            sysMenuList = convertLine2Tree4Menu(sysMenuList, -1);
+        }
+        return sysMenuList;
+    }
 
-	/**
-	 * 分页查询方法
-	 */
-	@Override
-	public PaginationResultVO<SysMenu> findListByPage(SysMenuQuery param) {
-		int count = this.findCountByParam(param);
-		int pageSize = param.getPageSize() == null ? PageSize.SIZE15.getSize() : param.getPageSize();
+    public List<SysMenu> convertLine2Tree4Menu(List<SysMenu> dataList, Integer pid) {
+        List<SysMenu> child = new ArrayList<>();
+        for (SysMenu m : dataList) {
+            if (m.getMenuId() != null && m.getpId() != null && m.getpId().equals(pid)) {
+                m.setChildren(convertLine2Tree4Menu(dataList, m.getMenuId()));
+                child.add(m);
+            }
+        }
+        return child;
+    }
 
-		SimplePage page = new SimplePage(param.getPageNo(), count, pageSize);
-		param.setSimplePage(page);
-		List<SysMenu> list = this.findListByParam(param);
-		PaginationResultVO<SysMenu> result = new PaginationResultVO(count, page.getPageSize(), page.getPageNo(), page.getPageTotal(), list);
-		return result;
-	}
+    /**
+     * 根据条件查询列表
+     */
+    @Override
+    public Integer findCountByParam(SysMenuQuery param) {
+        return this.sysMenuMapper.selectCount(param);
+    }
 
-	/**
-	 * 新增
-	 */
-	@Override
-	public Integer add(SysMenu bean) {
-		return this.sysMenuMapper.insert(bean);
-	}
+    /**
+     * 分页查询方法
+     */
+    @Override
+    public PaginationResultVO<SysMenu> findListByPage(SysMenuQuery param) {
+        int count = this.findCountByParam(param);
+        int pageSize = param.getPageSize() == null ? PageSize.SIZE15.getSize() : param.getPageSize();
 
-	/**
-	 * 批量新增
-	 */
-	@Override
-	public Integer addBatch(List<SysMenu> listBean) {
-		if (listBean == null || listBean.isEmpty()) {
-			return 0;
-		}
-		return this.sysMenuMapper.insertBatch(listBean);
-	}
+        SimplePage page = new SimplePage(param.getPageNo(), count, pageSize);
+        param.setSimplePage(page);
+        List<SysMenu> list = this.findListByParam(param);
+        PaginationResultVO<SysMenu> result = new PaginationResultVO(count, page.getPageSize(), page.getPageNo(), page.getPageTotal(), list);
+        return result;
+    }
 
-	/**
-	 * 批量新增或者修改
-	 */
-	@Override
-	public Integer addOrUpdateBatch(List<SysMenu> listBean) {
-		if (listBean == null || listBean.isEmpty()) {
-			return 0;
-		}
-		return this.sysMenuMapper.insertOrUpdateBatch(listBean);
-	}
+    /**
+     * 新增
+     */
+    @Override
+    public Integer add(SysMenu bean) {
+        return this.sysMenuMapper.insert(bean);
+    }
 
-	/**
-	 * 多条件更新
-	 */
-	@Override
-	public Integer updateByParam(SysMenu bean, SysMenuQuery param) {
-		StringTools.checkParam(param);
-		return this.sysMenuMapper.updateByParam(bean, param);
-	}
+    /**
+     * 批量新增
+     */
+    @Override
+    public Integer addBatch(List<SysMenu> listBean) {
+        if (listBean == null || listBean.isEmpty()) {
+            return 0;
+        }
+        return this.sysMenuMapper.insertBatch(listBean);
+    }
 
-	/**
-	 * 多条件删除
-	 */
-	@Override
-	public Integer deleteByParam(SysMenuQuery param) {
-		StringTools.checkParam(param);
-		return this.sysMenuMapper.deleteByParam(param);
-	}
+    /**
+     * 批量新增或者修改
+     */
+    @Override
+    public Integer addOrUpdateBatch(List<SysMenu> listBean) {
+        if (listBean == null || listBean.isEmpty()) {
+            return 0;
+        }
+        return this.sysMenuMapper.insertOrUpdateBatch(listBean);
+    }
 
-	/**
-	 * 根据MenuId获取对象
-	 */
-	@Override
-	public SysMenu getSysMenuByMenuId(Integer menuId) {
-		return this.sysMenuMapper.selectByMenuId(menuId);
-	}
+    /**
+     * 多条件更新
+     */
+    @Override
+    public Integer updateByParam(SysMenu bean, SysMenuQuery param) {
+        StringTools.checkParam(param);
+        return this.sysMenuMapper.updateByParam(bean, param);
+    }
 
-	/**
-	 * 根据MenuId修改
-	 */
-	@Override
-	public Integer updateSysMenuByMenuId(SysMenu bean, Integer menuId) {
-		return this.sysMenuMapper.updateByMenuId(bean, menuId);
-	}
+    /**
+     * 多条件删除
+     */
+    @Override
+    public Integer deleteByParam(SysMenuQuery param) {
+        StringTools.checkParam(param);
+        return this.sysMenuMapper.deleteByParam(param);
+    }
 
-	/**
-	 * 根据MenuId删除
-	 */
-	@Override
-	public Integer deleteSysMenuByMenuId(Integer menuId) {
-		return this.sysMenuMapper.deleteByMenuId(menuId);
-	}
+    /**
+     * 根据MenuId获取对象
+     */
+    @Override
+    public SysMenu getSysMenuByMenuId(Integer menuId) {
+        return this.sysMenuMapper.selectByMenuId(menuId);
+    }
+
+    /**
+     * 根据MenuId修改
+     */
+    @Override
+    public Integer updateSysMenuByMenuId(SysMenu bean, Integer menuId) {
+        return this.sysMenuMapper.updateByMenuId(bean, menuId);
+    }
+
+    /**
+     * 根据MenuId删除
+     */
+    @Override
+    public Integer deleteSysMenuByMenuId(Integer menuId) {
+        return this.sysMenuMapper.deleteByMenuId(menuId);
+    }
 }

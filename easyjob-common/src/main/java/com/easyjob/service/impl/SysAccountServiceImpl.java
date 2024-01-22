@@ -161,6 +161,7 @@ public class SysAccountServiceImpl implements SysAccountService {
         }
         if (SysAccountStatusEnum.DISABLE.getStatus().equals(sysAccount.getStatus())) {
             throw new BusinessException("账号已禁用");
+            
         }
         if (!sysAccount.getPassword().equals(password)) {
             throw new BusinessException("账号密码错误");

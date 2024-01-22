@@ -27,19 +27,13 @@ import java.lang.reflect.Parameter;
 @Aspect
 @Component("operationAspect")
 public class OperationAspect {
-    //    @Pointcut("@annotation(com.easyjob.annotation.GlobalInterceptor)")
-//    private void pointcut(){
-//
-//    }
     private final Logger logger = LoggerFactory.getLogger(OperationAspect.class);
-
     private static final String[] BASE_TYPE_ARRAY = new String[]{"java.lang.String", "java.lang.Integer", "java.lang.Long"};
 
     @Before("@annotation(com.easyjob.annotation.GlobalInterceptor)")
     public void interceptionDO(JoinPoint point) {
         Object[] arguments = point.getArgs();
         Method method = ((MethodSignature) point.getSignature()).getMethod();
-        //logger.info("方法名:()", method.getName());
         GlobalInterceptor interceptor = method.getAnnotation(GlobalInterceptor.class);
         if (interceptor == null) {
             return;
