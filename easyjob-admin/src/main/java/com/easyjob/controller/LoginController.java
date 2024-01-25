@@ -51,7 +51,7 @@ public class LoginController extends ABaseController {
         }
         SessionUserAdminDto userDto = sysAccountService.login(sysAccount.getPhone(), sysAccount.getPassword());
         session.setAttribute(Constants.SESSION_KEY, userDto);
-        return getSuccessResponseVO(null);
+        return getSuccessResponseVO(userDto);
     }
 
 }

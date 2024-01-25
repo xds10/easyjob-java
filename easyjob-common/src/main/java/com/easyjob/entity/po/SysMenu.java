@@ -1,5 +1,7 @@
 package com.easyjob.entity.po;
 
+import com.easyjob.annotation.VerifyParam;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -18,11 +20,13 @@ public class SysMenu implements Serializable {
     /**
      * 菜单名
      */
+    @VerifyParam(required = true, max = 32)
     private String menuName;
 
     /**
      * 菜单类型:0:菜单,1:按钮
      */
+    @VerifyParam(required = true)
     private Integer menuType;
 
     /**
@@ -33,21 +37,25 @@ public class SysMenu implements Serializable {
     /**
      * 上级菜单
      */
+    @VerifyParam(required = true)
     private Integer pId;
 
     /**
      * 菜单排序
      */
+    @VerifyParam(required = true)
     private Integer sort;
 
     /**
      * 权限编码
      */
+    @VerifyParam(required = true, max = 50)
     private String permissionCode;
 
     /**
      * 图标
      */
+    @VerifyParam(max = 50)
     private String icon;
 
     private List<SysMenu> children;

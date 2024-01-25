@@ -1,5 +1,7 @@
 package com.easyjob.controller;
 
+import com.easyjob.annotation.GlobalInterceptor;
+import com.easyjob.annotation.VerifyParam;
 import com.easyjob.entity.po.SysMenu;
 import com.easyjob.entity.query.SysMenuQuery;
 import com.easyjob.entity.vo.ResponseVO;
@@ -25,7 +27,17 @@ public class SysMenuController extends ABaseController {
      * 根据条件分页查询
      */
     @RequestMapping("/menuList")
-    public ResponseVO loadDataList() {
+    public ResponseVO menuList() {
+        SysMenuQuery query = new SysMenuQuery();
+        query.setFormate2Tree(true);
+        query.setOrderBy("sort asc");
+        List<SysMenu> sysMenuList = sysMenuService.findListByParam(query);
+        return getSuccessResponseVO(sysMenuList);
+    }
+
+    @RequestMapping("/saveMenu")
+    @GlobalInterceptor
+    public ResponseVO saveMenu(@VerifyParam SysMenu sysMenu) {
         SysMenuQuery query = new SysMenuQuery();
         query.setFormate2Tree(true);
         query.setOrderBy("sort asc");

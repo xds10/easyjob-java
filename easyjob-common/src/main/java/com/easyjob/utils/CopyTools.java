@@ -7,7 +7,7 @@ import java.util.List;
 
 public class CopyTools {
     public static <T, S> List<T> copyList(List<S> sList, Class<T> classz) {
-        List<T> list = new ArrayList<>();
+        List<T> list = new ArrayList<T>();
         for (S s : sList) {
             T t = null;
             try {

@@ -44,6 +44,7 @@ public class SysMenuServiceImpl implements SysMenuService {
         return sysMenuList;
     }
 
+    @Override
     public List<SysMenu> convertLine2Tree4Menu(List<SysMenu> dataList, Integer pid) {
         List<SysMenu> child = new ArrayList<>();
         for (SysMenu m : dataList) {

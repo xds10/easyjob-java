@@ -176,21 +176,28 @@ public class SysAccountServiceImpl implements SysAccountService {
             throw new BusinessException("账号密码错误");
         }
         SysMenuQuery query = new SysMenuQuery();
-        query.setFormate2Tree(true);
+        query.setFormate2Tree(false);
         query.setOrderBy("sort asc");
         List<SysMenu> sysMenuList = sysMenuService.findListByParam(query);
-
         List<SysMenuVO> menuVOList = new ArrayList<>();
+        List<String> permissionCodeList = new ArrayList<>();
+        sysMenuList.forEach(item -> {
+            permissionCodeList.add(item.getPermissionCode());
+        });
+
+        sysMenuList = sysMenuService.convertLine2Tree4Menu(sysMenuList, 0);
         sysMenuList.forEach(item -> {
             SysMenuVO menuVO = CopyTools.copy(item, SysMenuVO.class);
             menuVO.setChildren(CopyTools.copyList(item.getChildren(), SysMenuVO.class));
             menuVOList.add(menuVO);
         });
+
         SessionUserAdminDto adminDto = new SessionUserAdminDto();
         adminDto.setSuperAdmin(true);
         adminDto.setUsername(sysAccount.getUsername());
         adminDto.setUserid(sysAccount.getUserId());
         adminDto.setMenuList(menuVOList);
+        adminDto.setPermissionCodeList(permissionCodeList);
         return adminDto;
     }
 }
