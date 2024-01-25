@@ -4,16 +4,22 @@ import com.easyjob.entity.dto.SessionUserAdminDto;
 import com.easyjob.entity.enums.PageSize;
 import com.easyjob.entity.enums.SysAccountStatusEnum;
 import com.easyjob.entity.po.SysAccount;
+import com.easyjob.entity.po.SysMenu;
 import com.easyjob.entity.query.SimplePage;
 import com.easyjob.entity.query.SysAccountQuery;
+import com.easyjob.entity.query.SysMenuQuery;
 import com.easyjob.entity.vo.PaginationResultVO;
+import com.easyjob.entity.vo.SysMenuVO;
 import com.easyjob.exception.BusinessException;
 import com.easyjob.mappers.SysAccountMapper;
 import com.easyjob.service.SysAccountService;
+import com.easyjob.service.SysMenuService;
+import com.easyjob.utils.CopyTools;
 import com.easyjob.utils.StringTools;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -25,6 +31,9 @@ public class SysAccountServiceImpl implements SysAccountService {
 
     @Resource
     private SysAccountMapper<SysAccount, SysAccountQuery> sysAccountMapper;
+
+    @Resource
+    private SysMenuService sysMenuService;
 
     /**
      * 根据条件查询列表
@@ -161,16 +170,27 @@ public class SysAccountServiceImpl implements SysAccountService {
         }
         if (SysAccountStatusEnum.DISABLE.getStatus().equals(sysAccount.getStatus())) {
             throw new BusinessException("账号已禁用");
-            
+
         }
         if (!sysAccount.getPassword().equals(password)) {
             throw new BusinessException("账号密码错误");
         }
+        SysMenuQuery query = new SysMenuQuery();
+        query.setFormate2Tree(true);
+        query.setOrderBy("sort asc");
+        List<SysMenu> sysMenuList = sysMenuService.findListByParam(query);
+
+        List<SysMenuVO> menuVOList = new ArrayList<>();
+        sysMenuList.forEach(item -> {
+            SysMenuVO menuVO = CopyTools.copy(item, SysMenuVO.class);
+            menuVO.setChildren(CopyTools.copyList(item.getChildren(), SysMenuVO.class));
+            menuVOList.add(menuVO);
+        });
         SessionUserAdminDto adminDto = new SessionUserAdminDto();
         adminDto.setSuperAdmin(true);
         adminDto.setUsername(sysAccount.getUsername());
         adminDto.setUserid(sysAccount.getUserId());
-
+        adminDto.setMenuList(menuVOList);
         return adminDto;
     }
 }
