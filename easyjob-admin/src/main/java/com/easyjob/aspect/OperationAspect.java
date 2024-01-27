@@ -111,7 +111,7 @@ public class OperationAspect {
         /**
          * 校验正则
          */
-        if (!isEmpty && StringTools.isEmpty(verifyParam.regex().getRegex()) && VerifyUtils.verify(verifyParam.regex(), String.valueOf(value))) {
+        if (!isEmpty && !StringTools.isEmpty(verifyParam.regex().getRegex()) && !VerifyUtils.verify(verifyParam.regex(), String.valueOf(value))) {
             throw new BusinessException(ResponseCodeEnum.CODE_600);
 
         }

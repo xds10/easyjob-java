@@ -38,11 +38,15 @@ public class SysMenuController extends ABaseController {
     @RequestMapping("/saveMenu")
     @GlobalInterceptor
     public ResponseVO saveMenu(@VerifyParam SysMenu sysMenu) {
-        SysMenuQuery query = new SysMenuQuery();
-        query.setFormate2Tree(true);
-        query.setOrderBy("sort asc");
-        List<SysMenu> sysMenuList = sysMenuService.findListByParam(query);
-        return getSuccessResponseVO(sysMenuList);
+        sysMenuService.saveMenu(sysMenu);
+        return getSuccessResponseVO(null);
+    }
+
+    @RequestMapping("/delMenu")
+    @GlobalInterceptor
+    public ResponseVO delMenu(@VerifyParam SysMenu sysMenu) {
+        sysMenuService.deleteSysMenuByMenuId(sysMenu.getMenuId());
+        return getSuccessResponseVO(null);
     }
 
     /**

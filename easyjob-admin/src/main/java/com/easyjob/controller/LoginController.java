@@ -46,6 +46,7 @@ public class LoginController extends ABaseController {
     public ResponseVO login(HttpSession session,
                             @VerifyParam(required = true) String checkCode,
                             @VerifyParam(required = true) SysAccount sysAccount) {
+
         if (!checkCode.equalsIgnoreCase((String) session.getAttribute(Constants.CHECK_CODE_KEY))) {
             throw new BusinessException("图片验证码错误");
         }

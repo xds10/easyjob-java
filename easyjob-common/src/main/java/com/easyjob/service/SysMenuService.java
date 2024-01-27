@@ -71,4 +71,5 @@ public interface SysMenuService {
 
     List<SysMenu> convertLine2Tree4Menu(List<SysMenu> dataList, Integer pid);
 
+    void saveMenu(SysMenu sysMenu);
 }

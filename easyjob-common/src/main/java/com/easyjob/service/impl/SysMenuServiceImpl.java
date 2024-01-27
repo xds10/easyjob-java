@@ -56,6 +56,15 @@ public class SysMenuServiceImpl implements SysMenuService {
         return child;
     }
 
+    @Override
+    public void saveMenu(SysMenu sysMenu) {
+        if (sysMenu.getMenuId() == null) {
+            this.sysMenuMapper.insert(sysMenu);
+        } else {
+            this.sysMenuMapper.updateByMenuId(sysMenu, sysMenu.getMenuId());
+        }
+    }
+
     /**
      * 根据条件查询列表
      */
